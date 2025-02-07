@@ -1,0 +1,15 @@
+name <- "Eugenia Ishaku"
+slack <- "Eugenia"
+email <- "eugeniaishaku@gmail.com"
+hobby <- "Watching movies and spending time with my family"
+country <- "Nigeria"
+discipline <- "Veterinary Medicine"
+preferred.language <- "R"
+
+print(name)
+print (slack)
+print(email)
+print(hobby)
+print(country)
+print(discipline)
+print(preferred.language)
