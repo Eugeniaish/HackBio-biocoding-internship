@@ -1,0 +1,107 @@
+# FIRST FUNCTION
+codon_db <- c("UUU"="Phe", "UUC"="Phe", "UUA"="Leu", "UUG"="Leu")
+test_cd <- "UUAUUAUUAUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUCUUCUUCUUCUUC"
+
+translator <- function(inputCodon) {
+  split_seq <- strsplit(inputCodon, "")[[1]]
+  codon_positions <- seq(1, length(split_seq), 3)
+  
+  ribosome_output <- c()
+  
+  for(i in codon_positions){
+    curr_nuc <- split_seq[i:(i+2)]
+    curr_nuc <- paste0(curr_nuc[1], curr_nuc[2], curr_nuc[3])
+    
+    ribosome_output <- c(ribosome_output, codon_db[curr_nuc])
+  }
+  
+  return(ribosome_output)
+}
+
+translator(test_cd)
+
+
+# SECOND FUNCTION
+
+#random lag phase and exponential phase duration
+
+population_maker <- function(lag_length = runif(1, 1, 5), exp_length = runif(1, 2, 6), x) {
+  
+  k <- 4 / exp_length
+  x_mid <- lag_length + (exp_length / 2) #k and x_mid calculated based on the phases
+  
+  solution <- 1 / (1 + exp(-k * (x - x_mid)))
+  return(solution)
+}
+
+od_600 <- c()
+for (i in 0:24) {
+  curr_od <- population_maker(x = i)
+  od_600 <- c(od_600, curr_od)
+}
+
+plot(x = 0:24, y = od_600)
+
+
+# 100 DIFFERENT GROWTH CURVES
+
+#random lag phase and exponential phase duration
+
+population_maker <- function(lag_length = runif(1, 1, 5), exp_length = runif(1, 2, 6), x) {
+  
+  k <- 4 / exp_length
+  x_mid <- lag_length + (exp_length / 2) #k and x_mid calculated based on the phases
+  
+  solution <- 1 / (1 + exp(-k * (x - x_mid)))
+  return(solution)
+}
+
+#generate 100 growth curves
+
+growth_dc <- do.call(rbind, lapply(1:100, function(num){
+  #random parameters for the curve
+  lag <- runif(1, 1, 5)
+  exp <- runif(1, 2, 6)
+  #simulation
+  od_600 <- population_maker(lag_length = lag, exp_length = exp, x = 0:24)
+  
+  data.frame(
+    Curve_num = num,
+    x = 0:24,
+    od_600 = od_600,
+    lag_length = lag,
+    exp_length = exp
+  )
+}))
+
+View(growth_dc)
+
+
+# THIRD FUNCTION
+
+time_to_80 <- function(lag_length, exp_length) {
+  k <- 4 / exp_length
+  x_mid <- lag_length + (exp_length / 2)
+  to_80 <- x_mid + (log(0.25) / (-k))
+  return(to_80)
+} 
+
+# example values lag = 2, exp = 5
+time_to_80(2, 5)
+
+
+# FOURTH FUNCTION
+
+hamming_dis <- function(slack, x_handle, pad_char = "_") {
+  max_len <- max(nchar(slack), nchar(x_handle))
+  pad <- function(s) {
+    paste0(s, strrep(pad_char, max_len - nchar(s)))
+  }
+  slack_padded <- pad(slack)
+  x_padded <- pad(x_handle)
+  sum(unlist(strsplit(slack_padded, "")) != unlist(strsplit(x_padded, "")))
+}
+
+result <- hamming_dis("Eugenia", "eugenia_ish")
+
+print(paste("The hamming distance is:", result))
